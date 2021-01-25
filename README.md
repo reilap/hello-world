@@ -2,5 +2,5 @@
 
 Hi hoomans!
 
-Starting new right here!
-Meow meow meow
+Trust me, I don't know what I am doing (wink)
+Nice to meet you!
