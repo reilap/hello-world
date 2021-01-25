@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet">
+    <title>Reila</title>
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    <style>
+        * {
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .wrap {
+            width: 1200px;
+            margin: auto;
+        }
+
+        .head {
+            width: 500px;
+            margin-top: 20px;
+        }
+
+        .container {
+            padding-left: 50px;
+        }
+
+        .head > .custom-file {
+            margin-bottom: -20px;
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        .updated-date{
+            color: dimgray;
+            font-size: small;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+            listing();
+        });
+
+        function listing() {
+            $.ajax({
+                type: "GET",
+                url: "/diary",
+                data: {},
+                success: function (response) {
+                    let mydiary = response ['all_diary']
+                    for (let i = 0; i < mydiary.length; i++) {
+                        let date = mydiary [i]['date']
+                        let desc = mydiary [i]['desc']
+                        let file = mydiary [i]['file']
+                        let uploaded = mydiary [i]['uploaded']
+                        let temp_html = `<div class="card">
+                                                <img class="card-img-top" src="../static/${file}" alt="Card-img-top">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">${date}</h5>
+                                                    <p class="card-text">${desc}</p>
+                                                    <p class="updated-date">${uploaded} </p>
+                                                </div>
+                                            </div>`
+                        $('#diary_card').append(temp_html)
+                    }
+                }
+            })
+        }
+
+        function posting() {
+            let date = $('#date').val()
+            let desc = $("#desc").val()
+
+            let file = $('#file')[0].files[0]
+            let form_data = new FormData()
+
+            form_data.append("file_give", file)
+            form_data.append("date_give", date)
+            form_data.append("desc_give", desc)
+
+            $.ajax({
+                type: "POST",
+                url: "/diary",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+    </script>
+</head>
+
+<body>
+
+<ul class="nav justify-content-center">
+    <li class="nav-item">
+        <a class="nav-link" href="/">Home</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/getDiary">Photo Album</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="getMovie">Movie Lists</a>
+    </li>
+</ul>
+
+
+<div class="wrap">
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4"> Photo Album</h1>
+            <div class="head">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="file">
+                    <label class="custom-file-label">Choose file</label>
+                </div>
+                <div class="form-group">
+                    <label></label>
+                    <input type="email" class="form-control" id="date" placeholder="Date">
+                </div>
+                <div class="form-group">
+                    <label></label>
+                    <textarea class="form-control" id="desc" rows="3"
+                              placeholder="Description"></textarea>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="posting()">Save</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-columns" id="diary_card">
+    </div>
+</div>
+</body>
+
+</html>
